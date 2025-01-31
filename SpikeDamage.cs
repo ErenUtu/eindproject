@@ -1,26 +1,30 @@
 using UnityEngine;
 
-public class Spike : MonoBehaviour
+public class SpikeDamage : MonoBehaviour
 {
-    // Reference to the GameOverScreen script
-    public GameOverScreen gameOverScreen;
-
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player")) // Check if the player collided
-        {
-            // Optionally disable the player or trigger an animation
-            other.gameObject.SetActive(false);
+        Debug.Log("Collision detected with: " + other.name); // Debugging log
 
-            // Trigger the game over screen
-            if (gameOverScreen != null)
-            {
-                gameOverScreen.ShowGameOver();
-            }
-            else
-            {
-                Debug.LogError("GameOverScreen is not assigned to the spike!");
-            }
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player hit the spikes!"); // Log specific to the player
+            TriggerGameOver();
+        }
+    }
+
+    private void TriggerGameOver()
+    {
+        Debug.Log("Activating Game Over screen..."); // Debugging log
+        GameOverManager gameOverManager = FindObjectOfType<GameOverManager>();
+
+        if (gameOverManager != null)
+        {
+            gameOverManager.GameOver(); // Roep de Game Over methode aan.
+        }
+        else
+        {
+            Debug.LogError("GameOverManager not found in the scene!"); // Log error als de manager niet is gevonden.
         }
     }
 }
