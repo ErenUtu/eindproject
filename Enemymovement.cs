@@ -1,70 +1,49 @@
 using UnityEngine;
 
-public class EnemyPatrol : MonoBehaviour
+public class EnemyBehavior : MonoBehaviour
 {
-    public float speed = 2f; // Snelheid van de vijand
-    public float leftBoundary = -5f; // Linker grens (relatief aan startpositie)
-    public float rightBoundary = 5f; // Rechter grens (relatief aan startpositie)
-    public float turnMargin = 0.5f; // Marge voordat de vijand omdraait
+    public float moveSpeed = 2f;    // Hoe snel de vijand beweegt
+    public float moveRange = 5f;    // Hoe ver de vijand beweegt naar links en rechts
+    private Vector3 startPosition;  // Startpositie van de vijand
 
-    private bool movingRight = true; // Geeft aan of de vijand naar rechts beweegt
-    private Vector3 startPosition; // Startpositie van de vijand
+    // Verwijzing naar het GameOverManager script
+    public GameOverManager gameOverManager;
 
     private void Start()
     {
-        // Sla de startpositie op
-        startPosition = transform.position;
+        startPosition = transform.position;   // Sla de startpositie van de vijand op
     }
 
     private void Update()
     {
-        Patrol();
+        // Laat de vijand heen en weer bewegen tussen twee punten met behulp van PingPong
+        float movement = Mathf.PingPong(Time.time * moveSpeed, moveRange);
+        transform.position = new Vector3(startPosition.x + movement, transform.position.y, transform.position.z);
     }
 
-    private void Patrol()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (movingRight)
+        // Controleer of de speler in botsing komt met de vijand
+        if (collision.gameObject.CompareTag("Player"))
         {
-            transform.Translate(Vector2.right * speed * Time.deltaTime);
+            // Verkrijg de Rigidbody2D component van de speler om de snelheid te controleren
+            Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
 
-            // Controleer of de vijand de rechter grens met marge heeft bereikt
-            if (transform.position.x >= startPosition.x + rightBoundary - turnMargin)
+            // Controleer of de speler valt (negatieve Y snelheid)
+            if (playerRb.linearVelocity.y < 0)
             {
-                movingRight = false;
-                Flip();
+                // Controleer of de positie van de speler boven die van de vijand is (de speler moet bovenop de vijand staan)
+                if (collision.transform.position.y > transform.position.y)
+                {
+                    // De speler valt en is boven de vijand, vernietig de vijand
+                    Destroy(gameObject);
+                }
+            }
+            else
+            {
+                // Als de speler niet valt, trigger dan Game Over
+                gameOverManager.GameOver();
             }
         }
-        else
-        {
-            transform.Translate(Vector2.left * speed * Time.deltaTime);
-
-            // Controleer of de vijand de linker grens met marge heeft bereikt
-            if (transform.position.x <= startPosition.x + leftBoundary + turnMargin)
-            {
-                movingRight = true;
-                Flip();
-            }
-        }
-    }
-
-    private void Flip()
-    {
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1; // Spiegelt de vijand
-        transform.localScale = localScale;
-    }
-
-    private void OnDrawGizmos()
-    {
-        // Teken visuele hulplijnen voor de linker- en rechtergrenzen in de Editor
-        Gizmos.color = Color.red;
-        Vector3 leftPoint = startPosition + Vector3.right * leftBoundary;
-        Vector3 rightPoint = startPosition + Vector3.right * rightBoundary;
-        Gizmos.DrawLine(leftPoint, rightPoint);
-
-        // Teken marges
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(leftPoint + Vector3.right * turnMargin, 0.1f);
-        Gizmos.DrawSphere(rightPoint - Vector3.right * turnMargin, 0.1f);
     }
 }
