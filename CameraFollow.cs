@@ -1,23 +1,23 @@
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+public class CameraVolgen : MonoBehaviour
 {
-    public Transform player; // Reference to the player's transform
-    public Vector3 offset;   // Offset between the player and camera
-    public float smoothSpeed = 0.125f; // Adjust for smoother movement
+    public Transform speler; // Verwijzing naar de transform van de speler
+    public Vector3 offset;   // Verschil tussen de speler en de camera
+    public float soepeleSnelheid = 0.125f; // Pas aan voor een soepelere beweging
 
     void LateUpdate()
     {
-        if (player != null)
+        if (speler != null)
         {
-            // Target position based on the player's position and offset
-            Vector3 targetPosition = player.position + offset;
+            // Doelpositie op basis van de positie van de speler en de offset
+            Vector3 doelPositie = speler.position + offset;
 
-            // Smoothly interpolate between the camera's current position and the target position
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, targetPosition, smoothSpeed);
+            // Zorg voor een soepele overgang tussen de huidige camera-positie en de doelpositie
+            Vector3 soepelePositie = Vector3.Lerp(transform.position, doelPositie, soepeleSnelheid);
 
-            // Update the camera's position
-            transform.position = smoothedPosition;
+            // Werk de camera-positie bij
+            transform.position = soepelePositie;
         }
     }
 }
