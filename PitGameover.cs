@@ -3,27 +3,27 @@ using UnityEngine.SceneManagement;
 
 public class GameOverTrigger : MonoBehaviour
 {
-    public GameObject gameOverScreen; // Reference to the Game Over screen UI
+    public GameObject gameOverScreen; // Verwijzing naar het Game Over-scherm UI
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the player entered the death zone
+        // Controleer of de speler de doodszone is binnengekomen
         if (collision.CompareTag("Player"))
         {
-            // Show the Game Over screen
+            // Toon het Game Over-scherm
             if (gameOverScreen != null)
             {
                 gameOverScreen.SetActive(true);
             }
 
-            // Optionally disable player controls
-            collision.gameObject.SetActive(false); // Disable player for simplicity
+            // Optioneel: Zet de besturing van de speler uit
+            collision.gameObject.SetActive(false); // Zet de speler uit voor eenvoud
         }
     }
 
-    // Optional: Restart the level
+    // Optioneel: Herstart het level
     public void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Herlaad het huidige level
     }
 }
